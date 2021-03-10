@@ -16,7 +16,8 @@
           style="background: gray"
         >
           <img :src="item.img" style="width: 780px; height: 300px" />
-          <div class="scroll_bt">
+          <!-- @click="bookmess(item.id)" -->
+          <div class="scroll_bt" >
             <p class="scbox_top">图书推荐</p>
             <p class="scbox_text">{{ item.text }}</p>
             <p class="scbox_intro">{{ item.intro }}</p>
@@ -30,7 +31,7 @@
       <div class="MP_introtext">
         <p class="title">您的专属图书推荐</p>
         <p class="text">
-          本平台是为您打造的专属图书推荐平台，我们将根据您的爱好与学习倾向来为您推荐优秀的图书。浩瀚书海纵然无法畅游饱览，惟愿取其精华拾其珍宝，汲取一方营养而已。
+          本平台是为您打造的专属图书推荐平台，我们将尽可能地为您推荐优秀的图书。浩瀚书海纵然无法畅游饱览，惟愿取其精华拾其珍宝，汲取一方营养而已。
         </p>
       </div>
     </div>
@@ -44,7 +45,7 @@
             <p class="iconfire iconfont bookfavorites">
             <span
               style="font-size: 20px; margin-left: 10px; font-family: '仿宋'"
-              >热度{{ this.weeklybooks[0].fire }}40</span
+              >热度{{ this.weeklybooks[0].hot }}</span
             >
           </p></div>
           
@@ -57,7 +58,7 @@
           <div class="weeklyspan3 iconfont bookoffice"> 2 <i class="iconfire iconfont bookfavorites">
             <span
               style="font-size: 20px; margin-left: 10px; font-family: '仿宋'"
-              >热度{{ this.weeklybooks[0].fire }}40</span
+              >热度{{ this.weeklybooks[1].hot }}</span
             >
           </i></div>
           <p class="weektitle">{{ this.weeklybooks[1].text }}</p>
@@ -68,7 +69,7 @@
           <div class="weeklyspan3 iconfont bookoffice">3<i class="iconfire iconfont bookfavorites">
             <span
               style="font-size: 20px; margin-left: 10px; font-family: '仿宋'"
-              >热度{{ this.weeklybooks[0].fire }}40</span
+              >热度{{ this.weeklybooks[2].hot }}</span
             >
           </i></div>
           <p class="weektitle">{{ this.weeklybooks[2].text }}</p>
@@ -79,7 +80,7 @@
           <div class="weeklyspan3 iconfont bookoffice">4 <i class="iconfire iconfont bookfavorites">
             <span
               style="font-size: 20px; margin-left: 10px; font-family: '仿宋'"
-              >热度{{ this.weeklybooks[0].fire }}40</span
+              >热度{{ this.weeklybooks[3].hot }}</span
             >
           </i></div>
           <p class="weektitle">{{ this.weeklybooks[3].text }}</p>
@@ -90,7 +91,7 @@
           <div class="weeklyspan3 iconfont bookoffice">5 <i class="iconfire iconfont bookfavorites">
             <span
               style="font-size: 20px; margin-left: 10px; font-family: '仿宋'"
-              >热度{{ this.weeklybooks[0].fire }}40</span
+              >热度{{ this.weeklybooks[4].hot }}</span
             >
           </i></div>
           <p class="weektitle">{{ this.weeklybooks[4].text }}</p>
@@ -102,19 +103,19 @@
       <div class="toptitle">
         <p>Top Books</p>
       </div>
-      <div class="top1">
+      <div class="top1" @click="bookmessTop(0)">
         <p class="topbg">{{ this.tops[0].type }}</p>
         <img class="imgg" :src="this.tops[0].img" />
         <p class="toptext">{{ this.tops[0].text }}</p>
         <div class="tops_intro">{{ this.tops[0].intro }}</div>
       </div>
-      <div class="top2">
+      <div class="top2" @click="bookmessTop(1)">
         <p class="topbg">{{ this.tops[1].type }}</p>
         <img class="imgg" :src="this.tops[1].img" />
         <p class="toptext">{{ this.tops[1].text }}</p>
         <div class="tops_intro">{{ this.tops[1].intro }}</div>
       </div>
-      <div class="top3">
+      <div class="top3" @click="bookmessTop(2)">
         <p class="topbg">{{ this.tops[2].type }}</p>
         <img class="imgg" :src="this.tops[2].img" />
         <p class="toptext">{{ this.tops[2].text }}</p>
@@ -197,7 +198,7 @@
 </template>
 <script>
 import { scrollShow, startScroll } from "../../static/js/mainPath.js";
-import { getmainPath } from "../url.js";
+import { getmainPath, reGetBook,markBook,deleteBook } from "../url.js";
 export default {
   data() {
     return {
@@ -206,30 +207,64 @@ export default {
       weeklybooks: [{}, {}, {}, {}, {}],
       tops: [{}, {}, {}],
       bookmessShow: false,
-      item: "",
+      item: {},
+      atId:""//当前点击的书籍的id
     };
   },
   methods: {
-    addStar() {
-      this.$message.success("收藏成功");
+    addStar() {//添加收藏
+      markBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+        if(res.code==1){   
+        //回显数据
+          reGetBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+            this.item=res.data;
+          })
+          this.$message.success("收藏成功");
+        }
+        else
+        {
+          this.$message.warnning("收藏出现错误！");
+        }
+      })
+      
     },
-    removeStar() {
-      this.$message.success("移除成功");
+    removeStar() {//移除收藏
+      deleteBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+        if(res.code==1){   
+        //回显数据
+          reGetBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+            this.item=res.data;
+          })
+          this.$message.success("取消收藏成功");
+        }
+        else
+        {
+          this.$message.warnning("取消收藏错误！");
+        }
+      })
     },
     getData() {
       //渲染首页的数据
-      getmainPath().then((res) => {
+    getmainPath({"user_name":this.$store.state.user_name}).then((res) => {
         this.scrollbox = res.data.scrollbox;
         this.weeklybooks = res.data.weeklybooks;
         this.tops = res.data.tops;
       });
     },
-
-    bookmess(num) {
-      this.bookmessShow = true;
-      this.item = this.weeklybooks[num];
+    bookmess(num) {//打开的书籍
+    console.log('打开',this.weeklybooks[num])
+      this.atId=this.weeklybooks[num].id;
+      reGetBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+        this.item=res.data;
+        this.bookmessShow = true;
+      })
     },
-    hidBg() {},
+    bookmessTop(num){
+      this.atId=this.tops[num].id;
+      reGetBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+        this.item=res.data;
+        this.bookmessShow = true;
+      })},
   },
   mounted() {
     this.getData(); //加载时渲染数据

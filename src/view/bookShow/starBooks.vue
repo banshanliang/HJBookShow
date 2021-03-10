@@ -138,18 +138,14 @@
                   prop="tag"
                   label="标签"
                   width="100"
-                  :filters="[
-                    { text: '计算机类', value: '计算机类' },
-                    { text: '英语类', value: '英语类' },
-                  ]"
-                  :filter-method="filterTag"
+                  :filters=this.filter
                   filter-placement="bottom-end"
                 >
                   <template slot-scope="scope">
                     <el-tag
-                      :color="scope.row.id === '1' ? '#aed9e0' : '#db7f8e'"
+                      :color="tagcolor(scope.row.type)"
                       disable-transitions
-                      >计算机类</el-tag
+                      >{{scope.row.type}}</el-tag
                     >
                   </template>
                 </el-table-column>
@@ -159,12 +155,13 @@
                   width="150"
                   align="center"
                 >
-                  <div style="margin-left:10px">
+                  <template slot-scope="scope">
                     <el-popconfirm
                       confirm-button-text="确认"
                       cancel-button-text="不了"
                       icon="el-icon-info"
                       title="确定删除收藏？"
+                      @confirm="removebook(scope.row)"
                     >
                       <div slot="reference">
                         <div class="icon_menu3">
@@ -185,7 +182,8 @@
                         </div>
                       </div>
                     </el-popconfirm>
-                  </div>
+                    </template>
+                  
                 </el-table-column>
               </el-table></el-row
             >
@@ -224,7 +222,7 @@
   </div>
 </template>
 <script>
-import { showBooks } from "../../url.js";
+import { nameFindBook,deleteBook } from "../../url.js";
 export default {
   name: "starBooks",
   data() {
@@ -234,6 +232,9 @@ export default {
       value2: null,
       colors: ["#99A9BF", "#F7BA2A", "#FF9900"],
       percentage: 20,
+      filter:[{value:'',text:''}],
+      keyword:"",
+      pageNum:1
     };
   },
   methods: {
@@ -258,22 +259,66 @@ export default {
         this.percentage = 0;
       }
     },
-
+    //tag颜色
+    tagcolor(type){
+      if(type=='文学')return"#aed9e0"
+      else if(type=="计算机")return"#db7f8e"
+    },
+    //删除收藏
+    removebook(id){
+      deleteBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+        if(res.code==1){   
+        //回显数据
+        this.getData()
+          this.$message.success("取消收藏成功");
+        }
+        else
+        {
+          this.$message.warnning("取消收藏错误！");
+        }
+      })
+    },
+    //斑马纹颜色
     cellstyle(row, column, rowIndex, columnIndex) {
       if (row.rowIndex % 2 == 0)
         return "background-color:#e8e9db;color:#457b9d;background-image:url('../../../static/MPimg/wl01.jpg')";
       else
         return "background-color:#f4f3ee;color:#e5989b;background-image:url('../../../static/MPimg/wl01.jpg')";
     },
+    //去重
+    unique(arr){
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = i+1; j < arr.length; j++) {
+            if(toString.call(arr[i]) == toString.call(arr[j])){
+                if(JSON.stringify(arr[i]) == JSON.stringify(arr[j])){
+                    arr.splice(j,1);
+                    j--;
+                }
+
+            }
+        }
+    }
+     return arr;},
+     //统计类别
+    calculatetype(){
+      for(let i = 0; i < this.starbooks.length; i++){
+        this.filter[i]={"text":this.starbooks[i].type,"value":this.starbooks[i].type}
+      }
+      this.unique(this.filter)
+      console.log('类别',this.filter)
+    },
+    //查找书籍列表函数
     getData() {
-      showBooks().then(
+      nameFindBook({"user_name":this.$store.state.user_name,"pageNum":this.pageNum,"keyword":this.keyword}).then(
         (res) => {
-          this.starbooks = res.data.books;
+          this.starbooks = res.data.bookList;
+          this.calculatetype()
         },
         (err) => {
           this.$message.error("系统异常，请稍后重试");
         }
       );
+      
     },
   },
   mounted() {

@@ -71,20 +71,21 @@
 .tops .toptext{z-index:10;color:white;font-size: 50px;position: absolute;margin-top: 180px;font-family:'等线';font-style: italic;}
 .tops .tops_intro{display: none;}
 .top1{height: 460px;background-color: rgba(43, 161, 157, 0.31);padding: 30px 20px 10px 20px;}
-.top1 img{ position: absolute;z-index:0;margin-left: 80px;margin-top: 40px;}
-.tops img:hover{opacity: 0.7;}
-.top1 .toptext{color:white;font-size: 50px;position: absolute;margin-top: 180px;font-family:'等线';font-style: italic;}
+.top1 img{ position: absolute;z-index:0;margin-left: 80px;margin-top: 40px; max-height:300px ;}
+.tops img:hover{opacity: 0.5;}
+.top1 .toptext{margin-left: 100px;color:white;font-size: 50px;position: absolute;margin-top: 180px;font-family:'等线';font-style: italic;}
 .top1 p{display: none;}
 .top1 .tops_intro{width: 600px;margin:100px 0 0 760px;font-size: 25px;line-height: 40px;font-family:'宋体'}
 .top2{height: 450px;background-color: rgba(143, 158, 108, 0.51);padding: 30px 20px 10px 20px;}
 .top2 p{display: none;}
-.top2 img{ position: absolute;z-index:0;margin-left: 950px;margin-top: 40px;}
+.top2 img{ position: absolute;z-index:0;margin-left: 950px;margin-top: 40px;max-height:300px ;}
 .top2 .topbg{margin-left: 750px;}
-.top2 .toptext{margin-left: 750px;z-index:10;color:white;font-size: 50px;position: absolute;margin-top: 180px;font-family:'等线';font-style: italic;}
+.top2 .toptext{margin-left: 850px;z-index:10;color:white;font-size: 50px;position: absolute;margin-top: 180px;font-family:'等线';font-style: italic;}
 .top2 .tops_intro{width: 600px;margin:100px 0 0 40px;font-size: 25px;line-height: 40px;font-family:'宋体'}
 .top3{height: 450px;background-color: rgba(172, 107, 107, 0.47);padding: 30px 20px 10px 20px;margin-bottom: 0px;}
 .top3 p{display: none;}
-.top3 img{ position: absolute;z-index:0;margin-left: 80px;margin-top: 40px;}
+.top3 img{ position: absolute;z-index:0;margin-left: 80px;margin-top: 40px;max-height:300px ;}
+.top3 .toptext{margin-left: 100px;}
 .top3 .tops_intro{width: 600px;margin:100px 0 0 760px;font-size: 25px;line-height: 40px;font-family:'宋体'}
 /* 弹出框 */
 .el-dialog

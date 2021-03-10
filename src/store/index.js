@@ -10,9 +10,9 @@ export default new Vuex.Store({
     },
     mutations:{
       upuser(state,data){//修改state里面的user数据
-        state.user_name=data.user_name;
+        state.user_name=data.user_name;//用户姓名
         state.token=data.token;
-        state.authority=data.authority;
+        state.authority=data.authority;//用户权限
       }
     }
   })

@@ -63,8 +63,8 @@
             <el-form-item  label="图书名称" style="margin-bottom: 10px;font-weight:bold"><i class="iconfont bookform"></i> {{this.item.text}}  
                <el-button round icon="el-icon-star-on" style="background-color:#e9bcb7;color:white" v-if="!this.item.hasStared" @click="addStar" >收藏</el-button>
                <el-button icon="el-icon-star-off" style="background-color:#e9bcb7;color:black" v-if="this.item.hasStared" round @click="removeStar">已经收藏</el-button></el-form-item>
-            <el-form-item  label="图书简介" style="margin-bottom: 10px;font-weight:bold"><i class="iconfont bookoffice"></i> {{this.item.intro}}</el-form-item>
-            <el-form-item  label="推荐理由" style="margin-bottom: 10px;font-weight:bold"><i class="iconfont bookgood"></i> {{this.item.reason}}</el-form-item>
+            <el-form-item  label="图书简介" style="margin-bottom: 10px;font-weight:bold;font:10px"><i class="iconfont bookoffice"></i> {{this.item.intro}}</el-form-item>
+            <el-form-item  label="推荐理由" style="margin-bottom: 10px;font-weight:bold;font:10px"><i class="iconfont bookgood"></i> {{this.item.reason}}</el-form-item>
             <el-form-item  label="跳转地址" style="margin-bottom: 10px;font-weight:bold"><i class="iconfont booklink"></i> <a :href="item.src" target="_blank" style="color:#00F">外部图书推荐网址</a></el-form-item>
           </el-col></el-row></el-form
     >
@@ -73,7 +73,7 @@
 </div>
 </template>
 <script>
-import{getwordsCloud,showBooks}from'../../url.js'
+import{getwordsCloud,showBooks,reGetBook,markBook,deleteBook}from'../../url.js'
 //导入echart包制作词云图 
 import "echarts-wordcloud/dist/echarts-wordcloud";
 import "echarts-wordcloud/dist/echarts-wordcloud.min";
@@ -99,21 +99,47 @@ export default {
            datalist:[]
        }
    },
-   methods:{addStar(){
-        this.$message.success('收藏成功')
+   methods:{
+     addStar(){
+        markBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+        if(res.code==1){   
+        //回显数据
+          reGetBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+            this.item=res.data;
+          })
+          this.$message.success("收藏成功");
+        }
+        else
+        {
+          this.$message.warnning("收藏出现错误！");
+        }
+      })
      },
      removeStar(){
-        this.$message.success('移除成功');
+       deleteBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+        if(res.code==1){   
+        //回显数据
+          reGetBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
+            this.item=res.data;
+          })
+          this.$message.success("取消收藏成功");
+        }
+        else
+        {
+          this.$message.warnning("取消收藏错误！");
+        }
+      })
      },
     flowbookdraw(prop){
         this.drawer=true;
         console.log(prop)
+        this.atId=prop.id;
         this.item=this.datalist[prop.id]
     },
-    getData() {
+    getData() {//加载数据
        showBooks().then(res => {
           this.imgsArr = []
-         this.datalist=res.data.books
+          this.datalist=res.books
           for (var i = 0; i < this.datalist.length; i++) {
             this.imgsArr.push({ src:this.datalist[i].img, id:i, info: `<div class="ant-card-body1" ><i class="iconfont bookoffice"></i> ${i+1} ${this.datalist[i].text}</div><div class="ant-card-body2">${this.datalist[i].intro}</div>` })
             //src为加载的图片的地址、link为超链接的链接地址、info为自定义的图片展示信息，我这里因为是使用的ant-design的card样式，所以我复制了card展示时的代码到info中，大家可以根据自己的情况自行填写

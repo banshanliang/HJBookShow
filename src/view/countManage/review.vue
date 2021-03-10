@@ -1,6 +1,7 @@
 <template>
 <div>
-    <el-form label-width="130px" :inline="true" style="padding:10px 10px 0 10px" v-if="this.$store.state.authority=='admin'">
+<el-row style="height:550px">
+    <el-form label-width="130px" :inline="true" style="padding:10px 10px 0 10px" >
         <el-form-item label="输入旧密码："  prop="desc" style="margin-bottom:1px">
                 <el-input type="text"   label="输入旧密码  ："  class="resizeNone" v-model="pass.oldPass" placeholder="请输入密码"></el-input>
         </el-form-item>
@@ -12,7 +13,7 @@
         <el-form-item>
             <el-button type="primary" @click="handleClick">确认修改</el-button>
           </el-form-item>
-    </el-form>
+    </el-form></el-row>
 </div>
 </template>
 <script>

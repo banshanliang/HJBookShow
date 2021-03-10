@@ -16,9 +16,8 @@
     <!-- <el-menu-item index="/bookShow/bookShow">图书推荐</el-menu-item> -->
     <!-- <el-menu-item index="/bookShow/starBooks">个人收藏</el-menu-item> -->
   <!-- </el-submenu> -->
-  <el-menu-item index="/bookShow/bookShow" >图书推荐</el-menu-item>
-  <el-menu-item index="/weight/index" >比重关联</el-menu-item>
-  <el-menu-item index="/inputData/index">数据录入</el-menu-item>
+  <el-menu-item index="/inputData/index">书籍批量录入</el-menu-item>
+  <el-menu-item index="/inputData/books">书籍管理</el-menu-item>
   <el-submenu index="/countManage" class="countManage">
     <template slot="title">账号管理</template>
     <el-menu-item @click="tologin">退出登录</el-menu-item>
