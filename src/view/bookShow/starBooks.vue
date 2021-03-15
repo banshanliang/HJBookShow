@@ -28,7 +28,7 @@
           <el-scrollbar style="height: 100%; width: 1050px" class="totop">
             <el-row style="width: 1050px"
               ><el-table
-                header-cell-style="background-color:#a8dadc;color:white;"
+                :header-cell-style="headerstyle"
                 :data="starbooks"
                 style="width: 100%"
                 border
@@ -59,18 +59,18 @@
                             style="font-weight: bold"
                           >
                             <el-progress
-                              :percentage="percentage"
+                              :percentage="props.row.progress"
                               :color="customColorMethod"
                               style="width: 300px; margin-top: 12px"
                             ></el-progress
                             ><el-button-group>
                               <el-button
                                 icon="el-icon-minus"
-                                @click="decrease"
+                                @click="decrease(props.row)"
                               ></el-button>
                               <el-button
                                 icon="el-icon-plus"
-                                @click="increase"
+                                @click="increase(props.row)"
                               ></el-button>
                             </el-button-group> </el-form-item
                         ></el-col>
@@ -80,7 +80,7 @@
                             style="font-weight: bold"
                           >
                             <el-rate
-                              v-model="value2"
+                              v-model="props.row.score"
                               :colors="colors"
                               style="width: 300px; margin-top: 12px"
                             >
@@ -90,7 +90,7 @@
 
                       <el-form-item label="读书笔记" style="font-weight: bold">
                         <el-input
-                          v-model="props.row.write"
+                          v-model="props.row.evaluation"
                           style="width: 800px"
                           type="textarea"
                         ></el-input>
@@ -98,7 +98,7 @@
 
                       <el-form-item
                         ><div>
-                          <div class="icon_menu4" style="margin-top: 10px">
+                          <div class="icon_menu4" style="margin-top: 10px" @click="editbookmess(props.row)">
                             <el-tooltip
                               class="item"
                               effect="dark"
@@ -140,6 +140,7 @@
                   width="100"
                   :filters=this.filter
                   filter-placement="bottom-end"
+                  :filter-method="filterHandler"
                 >
                   <template slot-scope="scope">
                     <el-tag
@@ -191,7 +192,10 @@
               ><el-pagination
                 background
                 layout="prev, pager, next"
-                :total="1000"
+                :total="totalNum"
+                :page-size="7"
+                :current-page.sync="pageNum"
+                @current-change="handleCurrentChange"
               >
               </el-pagination
             ></el-row>
@@ -199,7 +203,7 @@
         </el-col>
 
         <el-col :span="6" class="myzpbox">
-          <!-- 我的族谱主页面 -->
+          <!-- 我的主页面 -->
           <div class="personbox">
             <div class="person_img">
               <a id="linkabout" class="linkabout" href="">关于我</a>
@@ -222,11 +226,13 @@
   </div>
 </template>
 <script>
-import { nameFindBook,deleteBook } from "../../url.js";
+import { nameFindBook,deleteBook,editorBook } from "../../url.js";
 export default {
   name: "starBooks",
   data() {
     return {
+      pageNum:"1",
+      totalNum:0,
       starbooks: [],
       trues: true,
       value2: null,
@@ -234,10 +240,34 @@ export default {
       percentage: 20,
       filter:[{value:'',text:''}],
       keyword:"",
-      pageNum:1
+      pageNum:1,
+      isfindtype:false
     };
   },
   methods: {
+    filterHandler(value, row, column){
+        return row['type'] === value;
+    },
+    handleCurrentChange(){
+      if(this.isfindtype==true)//是正在按照类别查询
+      {}
+      else
+      this.getData();
+    },
+    editbookmess(ob){
+      console.log(ob)
+      editorBook({id:ob.bookID,score:ob.score,progress:ob.progress,evaluation:ob. evaluation,user_name:this.$store.user_name}).then(res=>{
+        if(res.code==200)
+        {
+          this.$message.success('编辑成功');
+          this.getData();//回显数鞠
+        }
+        else
+        {
+          this.$message.error('编辑失败');
+        }
+      })
+    },
     customColorMethod(percentage) {
       if (percentage < 30) {
         return "#909399";
@@ -247,16 +277,16 @@ export default {
         return "#67c23a";
       }
     },
-    increase() {
-      this.percentage += 10;
-      if (this.percentage > 100) {
-        this.percentage = 100;
+    increase(ob) {
+      ob.progress += 10;
+      if (ob.progress > 100) {
+        ob.progress = 100;
       }
     },
-    decrease() {
-      this.percentage -= 10;
-      if (this.percentage < 0) {
-        this.percentage = 0;
+    decrease(ob) {
+      ob.progress -= 10;
+      if (ob.progress < 0) {
+        ob.progress = 0;
       }
     },
     //tag颜色
@@ -269,7 +299,7 @@ export default {
       deleteBook({"user_name":this.$store.state.user_name,"id":this.atId}).then(res=>{
         if(res.code==1){   
         //回显数据
-        this.getData()
+          this.getData();
           this.$message.success("取消收藏成功");
         }
         else
@@ -312,7 +342,8 @@ export default {
       nameFindBook({"user_name":this.$store.state.user_name,"pageNum":this.pageNum,"keyword":this.keyword}).then(
         (res) => {
           this.starbooks = res.data.bookList;
-          this.calculatetype()
+          this.calculatetype();
+          this.totalNum=res.data.totalNum
         },
         (err) => {
           this.$message.error("系统异常，请稍后重试");
@@ -320,6 +351,8 @@ export default {
       );
       
     },
+    headerstyle()
+    {return "background-color:#a8dadc;color:white"}
   },
   mounted() {
     this.getData();

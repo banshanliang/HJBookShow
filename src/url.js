@@ -38,7 +38,11 @@ export const nameFindBook = () =>{
     // /apis/bookShow
     return request(baseurl+'/mark/nameFindBook')
 }
-
+//编辑书籍信息
+export const editorBook = () =>{
+    // /apis/bookShow
+    return request(baseurl+'/mark/editorBook',{method:'post'})
+}
 
 //+++++++++++推荐列表接口++++++++++++++++++++
 //加载图书推荐页信息
